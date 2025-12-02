@@ -121,3 +121,9 @@ void neutralize_flashing_modifiers(uint8_t active_mods);
 #ifdef __cplusplus
 }
 #endif
+
+//---------------------
+void User_send_6kro_report(void);
+void User_send_nkro_report(void);
+void User_Clear_Board(void);
+void User_Send_Key(uint8_t Code, bool Status);
