@@ -488,13 +488,6 @@ void rgb_matrix_toggle_eeprom_helper(bool write_to_eeprom) {
     eeconfig_flag_rgb_matrix(write_to_eeprom);
     dprintf("rgb matrix toggle [%s]: rgb_matrix_config.enable = %u\n", (write_to_eeprom) ? "EEPROM" : "NOEEPROM", rgb_matrix_config.enable);
 }
-
-void rgb_matrix_toggle_eeprom_helper_ON_RGB(bool write_to_eeprom) {
-    rgb_matrix_config.enable = 1;
-    rgb_task_state = STARTING;
-    eeconfig_flag_rgb_matrix(write_to_eeprom);
-}
-
 void rgb_matrix_toggle_noeeprom(void) {
     rgb_matrix_toggle_eeprom_helper(false);
 }
@@ -647,9 +640,11 @@ void rgb_matrix_decrease_sat(void) {
 void rgb_matrix_increase_val_helper(bool write_to_eeprom) {
     rgb_matrix_sethsv_eeprom_helper(rgb_matrix_config.hsv.h, rgb_matrix_config.hsv.s, qadd8(rgb_matrix_config.hsv.v, RGB_MATRIX_VAL_STEP), write_to_eeprom);
 }
+
 void rgb_matrix_increase_val_noeeprom(void) {
     rgb_matrix_increase_val_helper(false);
 }
+
 void rgb_matrix_increase_val(void) {
     rgb_matrix_increase_val_helper(true);
 }

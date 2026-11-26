@@ -1,5 +1,5 @@
 /* Copyright 2023 Finalkey
- * Copyright 2023 LiWenLiu <https://github.com/Linger7857>
+ * Copyright 2023 LiWenLiu <https://github.com/LiuLiuQMK>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../../lib/rdr_lib/rdr_common.h"
-
-void matrix_io_delay(void) {
-}
-
-void matrix_output_select_delay(void) {
-}
-
-void matrix_output_unselect_delay(uint8_t line, bool key_pressed) {
-}
+#include "../../../lib/rdr_lib/rdr_common.h"
 
 led_config_t g_led_config = { {
     { 0        , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED   , NO_LED    },
@@ -72,10 +63,51 @@ void notify_usb_device_state_change_user(enum usb_device_state usb_device_state)
     }
 }
 
+/**********************系统函数***************************/
+/*  键盘扫描按键延时 */
+void matrix_io_delay(void) {
+}
+
+void matrix_output_select_delay(void) {
+}
+
+void matrix_output_unselect_delay(uint8_t line, bool key_pressed) {
+}
+
 void housekeeping_task_user(void) {
-    User_Keyboard_Reset();
+	if (Systick_10ms_OK) {                  //10ms
+        Systick_10ms_OK = false;
+
+        if (Mode_Synchronization_Signal) {  //模式同步
+            Mode_Synchronization_Signal = false;
+            Mode_Synchronization();
+        }
+
+        if (Ble_Name_Spi_Send) {            //蓝牙名称同步
+            Ble_Name_Synchronization();
+        }
+
+        if (User_Sleep_Time_Send) {         //一级休眠时间同步
+            Sleep_Time_Synchronization();
+        }
+
+        if (User_DSleep_Time_Send) {        //二级休眠时间同步
+            DSleep_Time_Synchronization();
+        }
+	}
+    if(Key_Sys_Mode_Flag){
+        Key_Sys_Mode_Flag = false;
+        User_Keyboard_Reset();
+    }
+
+    if(Init_Spi_Power_Flag){
+        Init_Spi_Power_Flag = false;
+        Key_Switch_Mode_Scan(); //波动开关轮询
+    }
+
     es_chibios_user_idle_loop_hook();
 }
+/*********************************************************/
 
 void board_init(void) {
     User_Keyboard_Init();

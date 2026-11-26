@@ -1,6 +1,6 @@
 # CIDOO QK61
 
-A customizable 85key keyboard.
+A customizable 88key keyboard.
 
 ![CIDOO QK61](https://raw.githubusercontent.com/Linyer-qwq/image/main/CIDOO QK61.jpg)
 

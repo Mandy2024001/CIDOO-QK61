@@ -34,6 +34,8 @@
 #include "version.h" // for QMK_BUILDDATE used in EEPROM magic
 #include "../lib/rdr_lib/rdr_common.h"
 
+
+
 #if defined(AUDIO_ENABLE)
 #    include "audio.h"
 #endif
@@ -293,6 +295,8 @@ __attribute__((weak)) bool via_command_kb(uint8_t *data, uint8_t length) {
 /*********************************************************/
 /*********************************************************/
 /*********************************************************/
+
+#if SIGNAL_RGB_ENABLE
 uint8_t packet[32];
 void get_qmk_version(void) //Grab the QMK Version
 {
@@ -327,7 +331,7 @@ void led_streaming(uint8_t *data) //Stream data from HID Packets to Keyboard.
    uint8_t numberofleds = data[2];
 
     if (RGB_MATRIX_SIGNALRGB != rgb_matrix_get_mode()) {
-        rgb_matrix_mode_noeeprom(RGB_MATRIX_SIGNALRGB); //解決signal RGB连接成功后灯乱闪问题
+        rgb_matrix_mode_noeeprom(RGB_MATRIX_SIGNALRGB); //Set RGB Matrix to SignalRGB Compatible Mode
     }
 
    if(numberofleds >= 10)
@@ -382,7 +386,7 @@ void get_firmware_type(void) //Grab which fork of qmk a board is running.
 
    raw_hid_send(packet, 32);
 }
-
+#endif
 
 
 
@@ -562,6 +566,8 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
             break;
         }
 #endif
+
+#if SIGNAL_RGB_ENABLE
         case id_signalrgb_qmk_version: {
            get_qmk_version();
            break;
@@ -594,6 +600,7 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
            get_firmware_type();
            break;
         }
+#endif
         case id_emi_test: {
             Emi_Read_Data(data, length);
             return;
@@ -609,7 +616,9 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
 
     // Return the same buffer, optionally with values changed
     // (i.e. returning state to the host, or the unhandled state).
-    raw_hid_send(data, length);
+    if(Keyboard_Info.Key_Mode == QMK_USB_MODE){
+        raw_hid_send(data, length);
+    }
 }
 
 #if defined(BACKLIGHT_ENABLE)
@@ -842,24 +851,24 @@ void via_qmk_rgb_matrix_set_value(uint8_t *data) {
     uint8_t *value_data = &(data[1]);
     switch (*value_id) {
         case id_qmk_rgb_matrix_brightness: {
-            rgb_matrix_sethsv_noeeprom(rgb_matrix_get_hue(), rgb_matrix_get_sat(), User_scale8(value_data[0], RGB_MATRIX_MAXIMUM_BRIGHTNESS));
+            rgb_matrix_sethsv(rgb_matrix_get_hue(), rgb_matrix_get_sat(), User_scale8(value_data[0], RGB_MATRIX_MAXIMUM_BRIGHTNESS));
             break;
         }
         case id_qmk_rgb_matrix_effect: {
             if (value_data[0] == 0) {
-                rgb_matrix_disable_noeeprom();
+                rgb_matrix_disable();
             } else {
-                rgb_matrix_enable_noeeprom();
-                rgb_matrix_mode_noeeprom(value_data[0]);
+                rgb_matrix_enable();
+                rgb_matrix_mode(value_data[0]);
             }
             break;
         }
         case id_qmk_rgb_matrix_effect_speed: {
-            rgb_matrix_set_speed_noeeprom(value_data[0]);
+            rgb_matrix_set_speed(value_data[0]);
             break;
         }
         case id_qmk_rgb_matrix_color: {
-            rgb_matrix_sethsv_noeeprom(value_data[0], value_data[1], rgb_matrix_get_val());
+            rgb_matrix_sethsv(value_data[0], value_data[1], rgb_matrix_get_val());
             break;
         }
     }

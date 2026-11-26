@@ -136,6 +136,7 @@ enum via_channel_id {
     id_qmk_rgb_matrix_channel = 3,
     id_qmk_audio_channel      = 4,
     id_qmk_led_matrix_channel = 5,
+    id_qmk_led_matrix_Lattice = 6,
 };
 
 enum via_qmk_backlight_value {
@@ -155,6 +156,13 @@ enum via_qmk_rgb_matrix_value {
     id_qmk_rgb_matrix_effect       = 2,
     id_qmk_rgb_matrix_effect_speed = 3,
     id_qmk_rgb_matrix_color        = 4,
+    id_qmk_rgb_signal_user_define  = 5,
+    id_qmk_rgb_all_user_define     = 6,
+    id_qmk_rgb_reset_user_define   = 7,
+    id_qmk_rgb_set_matrix_info     = 8,
+    id_qmk_rgb_get_matrix_info     = 9,
+    id_qmk_rgb_set_matrix_color    = 10,
+    id_qmk_rgb_read_matrix_data    = 11,
 };
 
 enum via_qmk_led_matrix_value {

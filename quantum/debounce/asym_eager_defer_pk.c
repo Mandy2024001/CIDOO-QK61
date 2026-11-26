@@ -33,15 +33,15 @@ releasing a key, that state is pushed after no changes occur for DEBOUNCE millis
 #    endif
 #endif
 
-// #ifndef DEBOUNCE
-// #    define DEBOUNCE 5
-// #endif
+#ifndef DEBOUNCE
+#    define DEBOUNCE 5
+#endif
 
-// // Maximum debounce: 127ms
-// #if DEBOUNCE > 127
-// #    undef DEBOUNCE
-// #    define DEBOUNCE 127
-// #endif
+// Maximum debounce: 127ms
+#if DEBOUNCE > 127
+#    undef DEBOUNCE
+#    define DEBOUNCE 127
+#endif
 
 #define ROW_SHIFTER ((matrix_row_t)1)
 
@@ -50,7 +50,7 @@ typedef struct {
     uint8_t time : 7;
 } debounce_counter_t;
 
-// #if DEBOUNCE > 0
+#if DEBOUNCE > 0
 static debounce_counter_t *debounce_counters;
 static fast_timer_t        last_time;
 static bool                counters_need_update;
@@ -154,7 +154,7 @@ static void transfer_matrix_values(matrix_row_t raw[], matrix_row_t cooked[], ui
             if (delta & col_mask) {
                 if (debounce_pointer->time == DEBOUNCE_ELAPSED) {
                     debounce_pointer->pressed = (raw[row] & col_mask);
-                    debounce_pointer->time    = Debounce_Delay;
+                    debounce_pointer->time    = DEBOUNCE;
                     counters_need_update      = true;
 
                     if (debounce_pointer->pressed) {
@@ -174,6 +174,6 @@ static void transfer_matrix_values(matrix_row_t raw[], matrix_row_t cooked[], ui
     }
 }
 
-// #else
-// #    include "none.c"
-// #endif
+#else
+#    include "none.c"
+#endif
